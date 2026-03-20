@@ -4,7 +4,7 @@ import { useState } from "react";
 import { VocabItem } from "@/types/dictionary";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
-const PART_OF_SPEECH_COLORS: Record<string, string> = {
+const POS_COLORS: Record<string, string> = {
   noun: "text-blue-400 bg-blue-400/10 border-blue-400/20",
   verb: "text-green-400 bg-green-400/10 border-green-400/20",
   adjective: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
@@ -13,7 +13,21 @@ const PART_OF_SPEECH_COLORS: Record<string, string> = {
 };
 
 function posColor(pos: string) {
-  return PART_OF_SPEECH_COLORS[pos.toLowerCase()] ?? "text-slate-400 bg-slate-400/10 border-slate-400/20";
+  return POS_COLORS[pos?.toLowerCase()] ?? "text-slate-400 bg-slate-400/10 border-slate-400/20";
+}
+
+function Pills({ label, items, color }: { label: string; items: string[]; color: string }) {
+  if (!items?.length) return null;
+  return (
+    <div className="mt-2">
+      <span className="text-xs text-slate-500 mr-1.5">{label}:</span>
+      <span className="inline-flex flex-wrap gap-1">
+        {items.slice(0, 6).map((s) => (
+          <span key={s} className={`text-xs px-2 py-0.5 rounded-full border ${color}`}>{s}</span>
+        ))}
+      </span>
+    </div>
+  );
 }
 
 interface Props {
@@ -47,9 +61,17 @@ export default function VocabDetail({ item }: Props) {
     setViExpanded((v) => !v);
   };
 
+  // Group results by partOfSpeech
+  const grouped = item.results.reduce<Record<string, typeof item.results>>((acc, r) => {
+    const pos = r.partOfSpeech ?? "other";
+    if (!acc[pos]) acc[pos] = [];
+    acc[pos].push(r);
+    return acc;
+  }, {});
+
   return (
     <div className="glass-card p-6 animate-slide-in">
-      {/* Word + phonetic */}
+      {/* Word + phonetic + meta */}
       <div className="mb-5">
         <div className="flex items-center gap-3 mb-1">
           <h2 className="text-4xl font-bold text-white">{item.word}</h2>
@@ -76,9 +98,21 @@ export default function VocabDetail({ item }: Props) {
             </button>
           )}
         </div>
-        {item.phonetic && (
-          <p className="text-purple-300 text-lg font-mono">{item.phonetic}</p>
-        )}
+
+        {/* Phonetic + syllables */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {item.phonetic && (
+            <p className="text-purple-300 text-lg font-mono">{item.phonetic}</p>
+          )}
+          {item.syllables && (
+            <p className="text-slate-500 text-sm">{item.syllables.list.join(" · ")}</p>
+          )}
+          {item.frequency != null && (
+            <span className="text-xs text-slate-500 border border-slate-700 rounded px-1.5 py-0.5">
+              freq {item.frequency.toFixed(1)}
+            </span>
+          )}
+        </div>
 
         {/* Vietnamese translation toggle */}
         <button
@@ -101,37 +135,26 @@ export default function VocabDetail({ item }: Props) {
 
       <div className="w-full h-px bg-purple-900/30 mb-5" />
 
-      {/* Meanings */}
+      {/* Definitions grouped by part of speech */}
       <div className="space-y-6">
-        {item.meanings.map((meaning, mi) => (
-          <div key={mi}>
-            {/* Part of speech badge */}
-            <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full border mb-3 ${posColor(meaning.partOfSpeech)}`}>
-              {meaning.partOfSpeech}
+        {Object.entries(grouped).map(([pos, results]) => (
+          <div key={pos}>
+            <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full border mb-3 ${posColor(pos)}`}>
+              {pos}
             </span>
 
-            <ol className="space-y-3">
-              {meaning.definitions.map((def, di) => (
-                <li key={di} className="flex gap-3">
-                  <span className="text-purple-400 font-bold text-sm mt-0.5 shrink-0">
-                    {di + 1}.
-                  </span>
-                  <div>
-                    <p className="text-slate-200 text-sm leading-relaxed">{def.definition}</p>
-                    {def.example && (
-                      <p className="text-slate-500 text-sm italic mt-1">
-                        &quot;{def.example}&quot;
-                      </p>
-                    )}
-                    {def.synonyms && def.synonyms.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {def.synonyms.slice(0, 5).map((s) => (
-                          <span key={s} className="text-xs bg-purple-500/10 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded-full">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+            <ol className="space-y-4">
+              {results.map((r, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="text-purple-400 font-bold text-sm mt-0.5 shrink-0">{i + 1}.</span>
+                  <div className="flex-1">
+                    <p className="text-slate-200 text-sm leading-relaxed">{r.definition}</p>
+                    {r.examples?.map((ex, ei) => (
+                      <p key={ei} className="text-slate-500 text-sm italic mt-1">&quot;{ex}&quot;</p>
+                    ))}
+                    <Pills label="synonyms" items={r.synonyms ?? []} color="bg-purple-500/10 text-purple-300 border-purple-500/20" />
+                    <Pills label="type of" items={r.typeOf ?? []} color="bg-blue-500/10 text-blue-300 border-blue-500/20" />
+                    <Pills label="has types" items={r.hasTypes ?? []} color="bg-slate-500/10 text-slate-400 border-slate-500/20" />
                   </div>
                 </li>
               ))}

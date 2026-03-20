@@ -23,18 +23,7 @@ export default function VocabApp() {
     lastWordRef.current = clean;
 
     try {
-      const entry = await lookupWord(clean);
-      const phonetic =
-        entry.phonetic ??
-        entry.phonetics.find((p) => p.text)?.text ??
-        "";
-
-      const item: VocabItem = {
-        word: entry.word,
-        phonetic,
-        meanings: entry.meanings ?? [],
-        addedAt: Date.now(),
-      };
+      const item = await lookupWord(clean);
 
       setVocabs((prev) => {
         const idx = prev.findIndex((v) => v.word === item.word);

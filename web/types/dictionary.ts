@@ -1,24 +1,19 @@
-export interface DictionaryEntry {
-  word: string;
-  phonetic?: string;
-  phonetics: { text?: string; audio?: string }[];
-  meanings: Meaning[];
-}
-
-export interface Meaning {
-  partOfSpeech: string;
-  definitions: Definition[];
-}
-
-export interface Definition {
+export interface WordResult {
   definition: string;
-  example?: string;
+  partOfSpeech: string;
   synonyms?: string[];
+  antonyms?: string[];
+  typeOf?: string[];
+  hasTypes?: string[];
+  examples?: string[];
+  derivation?: string[];
 }
 
 export interface VocabItem {
   word: string;
   phonetic: string;
-  meanings: Meaning[];
+  syllables?: { count: number; list: string[] };
+  frequency?: number;
+  results: WordResult[];
   addedAt: number;
 }

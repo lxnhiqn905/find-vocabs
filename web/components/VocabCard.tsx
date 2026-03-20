@@ -9,8 +9,7 @@ interface Props {
 }
 
 export default function VocabCard({ item, isSelected, onClick }: Props) {
-  const firstDef = item.meanings[0]?.definitions[0]?.definition ?? "";
-  const pos = item.meanings[0]?.partOfSpeech ?? "";
+  const firstResult = item.results[0];
 
   return (
     <button
@@ -27,12 +26,12 @@ export default function VocabCard({ item, isSelected, onClick }: Props) {
           <span className="text-xs text-purple-300 font-mono">{item.phonetic}</span>
         )}
       </div>
-      {pos && (
-        <span className="text-xs text-purple-400 italic">{pos}</span>
+      {firstResult?.partOfSpeech && (
+        <span className="text-xs text-purple-400 italic">{firstResult.partOfSpeech}</span>
       )}
-      {firstDef && (
+      {firstResult?.definition && (
         <p className="text-slate-400 text-xs mt-1 line-clamp-2 leading-relaxed">
-          {firstDef}
+          {firstResult.definition}
         </p>
       )}
     </button>
