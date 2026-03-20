@@ -35,7 +35,7 @@ export default function VocabDetail({ item }: Props) {
     if (!viExpanded && viTranslation === null) {
       setViLoading(true);
       try {
-        const res = await fetch(`/api/translate?word=${encodeURIComponent(item.word)}`);
+        const res = await fetch(`https://lingva.ml/api/v1/auto/vi/${encodeURIComponent(item.word)}`);
         const data = await res.json();
         setViTranslation(data.translation ?? null);
       } catch {
