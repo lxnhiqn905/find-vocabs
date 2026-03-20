@@ -22,7 +22,7 @@ function Pills({ label, items, color }: { label: string; items: string[]; color:
     <div className="mt-2">
       <span className="text-xs text-slate-500 mr-1.5">{label}:</span>
       <span className="inline-flex flex-wrap gap-1">
-        {items.slice(0, 6).map((s) => (
+        {items.map((s) => (
           <span key={s} className={`text-xs px-2 py-0.5 rounded-full border ${color}`}>{s}</span>
         ))}
       </span>
