@@ -3,6 +3,7 @@ export interface WordResult {
   partOfSpeech: string;
   synonyms?: string[];
   antonyms?: string[];
+  similarTo?: string[];
   typeOf?: string[];
   hasTypes?: string[];
   examples?: string[];

@@ -153,6 +153,8 @@ export default function VocabDetail({ item }: Props) {
                       <p key={ei} className="text-slate-500 text-sm italic mt-1">&quot;{ex}&quot;</p>
                     ))}
                     <Pills label="synonyms" items={r.synonyms ?? []} color="bg-purple-500/10 text-purple-300 border-purple-500/20" />
+                    <Pills label="antonyms" items={r.antonyms ?? []} color="bg-red-500/10 text-red-300 border-red-500/20" />
+                    <Pills label="similar to" items={r.similarTo ?? []} color="bg-teal-500/10 text-teal-300 border-teal-500/20" />
                     <Pills label="type of" items={r.typeOf ?? []} color="bg-blue-500/10 text-blue-300 border-blue-500/20" />
                     <Pills label="has types" items={r.hasTypes ?? []} color="bg-slate-500/10 text-slate-400 border-slate-500/20" />
                   </div>
