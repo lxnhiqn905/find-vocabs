@@ -76,7 +76,7 @@ export default function VocabDetail({ item }: Props) {
             </span>
 
             <ol className="space-y-3">
-              {meaning.definitions.slice(0, 4).map((def, di) => (
+              {meaning.definitions.map((def, di) => (
                 <li key={di} className="flex gap-3">
                   <span className="text-purple-400 font-bold text-sm mt-0.5 shrink-0">
                     {di + 1}.
