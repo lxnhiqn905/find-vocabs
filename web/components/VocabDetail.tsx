@@ -1,6 +1,7 @@
 "use client";
 
 import { VocabItem } from "@/types/dictionary";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
 const PART_OF_SPEECH_COLORS: Record<string, string> = {
   noun: "text-blue-400 bg-blue-400/10 border-blue-400/20",
@@ -19,11 +20,45 @@ interface Props {
 }
 
 export default function VocabDetail({ item }: Props) {
+  const { isSpeaking, isSupported, speak, stop } = useSpeechSynthesis();
+
+  const handleListen = () => {
+    if (isSpeaking) {
+      stop();
+    } else {
+      speak(item.word);
+    }
+  };
+
   return (
     <div className="glass-card p-6 animate-slide-in">
       {/* Word + phonetic */}
       <div className="mb-5">
-        <h2 className="text-4xl font-bold text-white mb-1">{item.word}</h2>
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-4xl font-bold text-white">{item.word}</h2>
+          {isSupported && (
+            <button
+              onClick={handleListen}
+              title={isSpeaking ? "Stop" : "Listen"}
+              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all ${
+                isSpeaking
+                  ? "bg-purple-500/30 border-purple-400 text-purple-300"
+                  : "bg-white/5 border-white/10 text-slate-400 hover:border-purple-400 hover:text-purple-300"
+              }`}
+            >
+              {isSpeaking ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16" rx="1" />
+                  <rect x="14" y="4" width="4" height="16" rx="1" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
         {item.phonetic && (
           <p className="text-purple-300 text-lg font-mono">{item.phonetic}</p>
         )}
