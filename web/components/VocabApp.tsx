@@ -95,7 +95,7 @@ export default function VocabApp() {
           {/* Detail panel */}
           <div className="lg:flex-1">
             {selected ? (
-              <VocabDetail item={selected} />
+              <VocabDetail key={selected.word} item={selected} />
             ) : (
               <div className="glass-card p-10 flex flex-col items-center justify-center text-center min-h-[280px]">
                 <div className="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
