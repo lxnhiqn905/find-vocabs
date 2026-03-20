@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { VocabItem } from "@/types/dictionary";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 
@@ -21,13 +22,29 @@ interface Props {
 
 export default function VocabDetail({ item }: Props) {
   const { isSpeaking, isSupported, speak, stop } = useSpeechSynthesis();
+  const [viTranslation, setViTranslation] = useState<string | null>(null);
+  const [viExpanded, setViExpanded] = useState(false);
+  const [viLoading, setViLoading] = useState(false);
 
   const handleListen = () => {
-    if (isSpeaking) {
-      stop();
-    } else {
-      speak(item.word);
+    if (isSpeaking) stop();
+    else speak(item.word);
+  };
+
+  const handleToggleVi = async () => {
+    if (!viExpanded && viTranslation === null) {
+      setViLoading(true);
+      try {
+        const res = await fetch(`/api/translate?word=${encodeURIComponent(item.word)}`);
+        const data = await res.json();
+        setViTranslation(data.translation ?? null);
+      } catch {
+        setViTranslation(null);
+      } finally {
+        setViLoading(false);
+      }
     }
+    setViExpanded((v) => !v);
   };
 
   return (
@@ -62,6 +79,24 @@ export default function VocabDetail({ item }: Props) {
         {item.phonetic && (
           <p className="text-purple-300 text-lg font-mono">{item.phonetic}</p>
         )}
+
+        {/* Vietnamese translation toggle */}
+        <button
+          onClick={handleToggleVi}
+          className="mt-2 flex items-center gap-1.5 text-xs text-slate-400 hover:text-purple-300 transition-colors"
+        >
+          <span className="px-1.5 py-0.5 rounded border border-slate-600 text-slate-400 font-semibold text-[10px]">VI</span>
+          {viLoading ? (
+            <span>Đang dịch...</span>
+          ) : viExpanded && viTranslation ? (
+            <span className="text-purple-300 font-medium">{viTranslation}</span>
+          ) : (
+            <span>Xem tiếng Việt</span>
+          )}
+          <svg xmlns="http://www.w3.org/2000/svg" className={`w-3 h-3 transition-transform ${viExpanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
       </div>
 
       <div className="w-full h-px bg-purple-900/30 mb-5" />
