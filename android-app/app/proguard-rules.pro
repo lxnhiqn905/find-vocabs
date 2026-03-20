@@ -1,0 +1,5 @@
+-keep class com.nhile.findvocabs.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class retrofit2.** { *; }
+-keep class com.google.gson.** { *; }

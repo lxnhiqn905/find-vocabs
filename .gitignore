@@ -1,0 +1,16 @@
+# Web
+web/.next/
+web/node_modules/
+web/.env*.local
+web/*.tsbuildinfo
+
+# Android
+android-app/.gradle/
+android-app/build/
+android-app/app/build/
+android-app/local.properties
+*.keystore
+*.jks
+
+# Misc
+.DS_Store
