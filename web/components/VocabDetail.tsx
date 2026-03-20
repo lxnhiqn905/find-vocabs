@@ -135,6 +135,13 @@ export default function VocabDetail({ item }: Props) {
 
       <div className="w-full h-px bg-purple-900/30 mb-5" />
 
+      {/* No results fallback */}
+      {item.results.length === 0 && (
+        <p className="text-slate-400 text-sm">
+          No definition found. <span className="text-slate-500">&ldquo;{item.word}&rdquo; may be an inflected form — try searching the base form instead.</span>
+        </p>
+      )}
+
       {/* Definitions grouped by part of speech */}
       <div className="space-y-6">
         {Object.entries(grouped).map(([pos, results]) => (

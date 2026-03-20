@@ -8,16 +8,16 @@ export async function lookupWord(word: string): Promise<VocabItem> {
   }
 
   const data = await res.json();
-  if (!data || !data.results?.length) {
-    throw new Error(`No definition found for "${word}"`);
+  if (!data?.word) {
+    throw new Error(`Word not found: "${word}"`);
   }
 
   return {
     word: data.word,
-    phonetic: data.pronunciation?.all ?? "",
+    phonetic: typeof data.pronunciation === "string" ? data.pronunciation : (data.pronunciation?.all ?? ""),
     syllables: data.syllables,
     frequency: data.frequency,
-    results: data.results,
+    results: data.results ?? [],
     addedAt: Date.now(),
   };
 }
